@@ -1,4 +1,4 @@
-# 🌌 LivingOS — Internet of Living Agents
+#  LivingOS — Internet of Living Agents
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
@@ -31,11 +31,11 @@ It’s the **Internet of Living Agents**.
 Clone the repository and install dependencies:
 
 ```bash
-git clone https://github.com/<your-username>/livingos-mini
+git clone https://github.com/<Andrii-sat>/livingos-mini
 cd livingos-mini
 pip install flask
 
-Requires Python 3.8+.
+Requires Python 3.8+
 
 ▶️ Usage
 
