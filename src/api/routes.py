@@ -1,61 +1,66 @@
-"""
-Flask routes for LivingOS (state, FCP API, import)
-"""
-
-import os
-from flask import request, jsonify, Response, current_app, send_from_directory
+# src/api/routes.py
+from flask import Blueprint, request, jsonify, Response
 from src.kernel.mini_os import MiniOS
 from src.kernel.fcp_protocol import fcp_pack, fcp_parse
 
+bp = Blueprint("api", __name__)
 kernel = MiniOS()
 
-def init_routes(app):
-    @app.route("/state")
-    def state():
-        # ліниво формуємо файл стану
-        if not os.path.isfile("vr_state.json"):
-            kernel.export_state("vr_state.json")
+@bp.route("/state", methods=["GET"])
+def state():
+    """Return current world snapshot."""
+    try:
+        kernel.export_state("vr_state.json")
         with open("vr_state.json", "r", encoding="utf-8") as f:
             return Response(f.read(), mimetype="application/json")
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    @app.route("/api/fcp", methods=["POST"])
-    def api_fcp():
-        data = request.get_json(force=True, silent=True) or {}
-        msg = data.get("msg", "")
-        try:
-            op, args = fcp_parse(msg)
-            if op == "T":
-                x = float(args["x"]) if "x" in args else None
-                y = float(args["y"]) if "y" in args else None
-                d = kernel.ingest_text(args.get("text", ""), x=x, y=y)
-                kernel.export_state("vr_state.json")
-                return jsonify({"resp": fcp_pack("OK", d=d)})
-            elif op == "M":
-                d = kernel.merge(args["a"], args["b"], float(args.get("mix", "0.5")))
-                kernel.export_state("vr_state.json")
-                return jsonify({"resp": fcp_pack("OK", d=d)})
-            elif op == "E":
-                p = kernel.export_state("vr_state.json")
-                return jsonify({"resp": fcp_pack("OK", path=p)})
-            elif op == "CLR":
-                kernel.clear()
-                kernel.export_state("vr_state.json")
-                return jsonify({"resp": fcp_pack("OK", cleared=1)})
-            else:
-                return jsonify({"resp": fcp_pack("ERR", reason=f"unknown op {op}")})
-        except Exception as e:
-            return jsonify({"resp": fcp_pack("ERR", reason=str(e))})
+@bp.route("/api/fcp", methods=["POST"])
+def api_fcp():
+    """FCP message interface."""
+    data = request.get_json(force=True, silent=True) or {}
+    msg = data.get("msg", "")
+    if not (msg.startswith("fcp://") and "|" in msg):
+        return jsonify({"resp": fcp_pack("ERR", reason="bad msg")})
 
-    @app.route("/import", methods=["POST"])
-    def import_state():
-        data = request.get_json(force=True, silent=True) or {}
-        try:
-            kernel.import_state(data, "vr_state.json")
-            return jsonify({"ok": True})
-        except Exception as e:
-            return jsonify({"ok": False, "error": str(e)}), 400
+    op, args = fcp_parse(msg)
+    try:
+        if op == "T":
+            d = kernel.ingest_text(args.get("text", ""), 
+                                   x=float(args.get("x")) if "x" in args else None,
+                                   y=float(args.get("y")) if "y" in args else None,
+                                   group=args.get("group"))
+            kernel.export_state("vr_state.json")
+            return jsonify({"resp": fcp_pack("OK", d=d)})
 
-    # коренева сторінка вже в app (index route) — але лишаємо запасний:
-    @app.route("/index.html")
-    def index_html():
-        return send_from_directory(current_app.static_folder, "index.html")
+        elif op == "M":
+            d = kernel.merge(args["a"], args["b"], float(args.get("mix", "0.5")))
+            kernel.export_state("vr_state.json")
+            return jsonify({"resp": fcp_pack("OK", d=d)})
+
+        elif op == "E":
+            p = kernel.export_state("vr_state.json")
+            return jsonify({"resp": fcp_pack("OK", path=p)})
+
+        elif op == "I":
+            kernel.import_state(json.loads(args["payload"]))
+            return jsonify({"resp": fcp_pack("OK", imported=1)})
+
+        elif op == "CLR":
+            kernel.clear()
+            kernel.export_state("vr_state.json")
+            return jsonify({"resp": fcp_pack("OK", cleared=1)})
+
+        elif op == "WORLD":
+            kernel.set_world(args.get("name", "default"))
+            return jsonify({"resp": fcp_pack("OK", active=kernel.active)})
+
+        elif op == "MODE":
+            kernel.set_mode(args.get("mode", "REAL"))
+            return jsonify({"resp": fcp_pack("OK", mode=kernel.mode)})
+
+        else:
+            return jsonify({"resp": fcp_pack("ERR", reason=f"unknown op {op}")})
+    except Exception as e:
+        return jsonify({"resp": fcp_pack("ERR", reason=str(e))})
