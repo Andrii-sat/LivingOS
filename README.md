@@ -75,9 +75,32 @@ Create agents from text, merge them into hybrids, and watch multidimensional wor
 
 ## 📁 Project Structure
 
-> Folder names are intentionally **Ukrainian**. If you prefer English (`src/`, `static/`), rename and adjust paths.
+LivingOS/
+ ├── LICENSE                   # MIT License
+ ├── README.md                 # Project description (wow effect)
+ ├── requirements.txt          # Dependencies (Flask, etc.)
+ ├── src/                      # Python backend
+ │   ├── __init__.py
+ │   ├── living_os_showtime.py # Main entrypoint (Flask + kernel)
+ │   ├── kernel/               # Core system logic
+ │   │   ├── __init__.py
+ │   │   ├── fractal_signature.py
+ │   │   ├── graph_fractal.py
+ │   │   ├── mini_os.py
+ │   │   └── fcp_protocol.py
+ │   └── api/                  # API layer
+ │       ├── __init__.py
+ │       └── routes.py
+ ├── static/                   # Frontend assets
+ │   ├── index.html
+ │   ├── style.css
+ │   └── app.js
+ ├── tests/                    # Unit tests
+ │   ├── __init__.py
+ │   └── test_basic.py
+ └── examples/                 # Example usage / demo data
+     └── demo_world.json
 
-LivingOS/ ├─ джерело/ │  └─ living_os_showtime.py      # Flask backend + kernel (entrypoint) ├─ статичний/ │  ├─ index.html                 # UI shell │  ├─ style.css                  # styles (Showtime-ready) │  └─ app.js                     # client logic & demo/story flows ├─ tests/ │  └─ test_basic.py              # minimal test stub ├─ requirements.txt              # Flask dependency ├─ .gitignore ├─ README.md └─ LICENSE
 
 ---
 
