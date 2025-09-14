@@ -1,21 +1,19 @@
-"""
-LivingOS Showtime Edition — Flask entrypoint
-"""
-
+# src/living_os_showtime.py
 from flask import Flask, send_from_directory
-from src.api.routes import init_routes
+from src.api.routes import bp as api_bp
 
-# static лежить на рівень вище за src/
-app = Flask(__name__, static_folder="../static", static_url_path="/static")
+app = Flask(__name__, static_folder="../static", template_folder="../static")
+app.register_blueprint(api_bp)
 
-# реєструємо маршрути (API, state, import, index)
-init_routes(app)
-
+# Serve static frontend
 @app.route("/")
 def index():
-    # видаємо static/index.html
-    return send_from_directory(app.static_folder, "index.html")
+    return send_from_directory("../static", "index.html")
+
+@app.route("/<path:path>")
+def static_proxy(path):
+    return send_from_directory("../static", path)
 
 if __name__ == "__main__":
-    print("[LivingOS WOW] running at http://0.0.0.0:5000")
+    print("[LivingOS Showtime] running at http://0.0.0.0:5000")
     app.run(host="0.0.0.0", port=5000, debug=False)
