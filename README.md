@@ -1,105 +1,91 @@
 #  LivingOS — Internet of Living Agents
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)
-![Flask](https://img.shields.io/badge/framework-Flask-lightgrey.svg)
-![Status](https://img.shields.io/badge/status-hackathon_demo-brightgreen.svg)
-![Made with ❤️](https://img.shields.io/badge/made%20with-%E2%9D%A4-red.svg)
+![GitHub repo size](https://img.shields.io/github/repo-size/Andrii-sat/livingos-mini)
+![GitHub license](https://img.shields.io/github/license/Andrii-sat/livingos-mini)
+![GitHub last commit](https://img.shields.io/github/last-commit/Andrii-sat/livingos-mini)
+![GitHub stars](https://img.shields.io/github/stars/Andrii-sat/livingos-mini?style=social)
 
-Imagine if data could **breathe, evolve, and connect**.  
-Not just files or numbers, but **living agents** — born from fractal seeds, carrying meaning, color, sound, and memory.  
+> **Not another chatbot. A new paradigm — a living internet where data becomes alive.**
 
-This is **LivingOS**: a lightweight operating system where any input — text, code, music, even DNA —  
-compresses into a seed `frsig://...` and becomes a **living agent** in a shared fractal world.  
 
----
+## 🚀 Quickstart
 
-## ✨ Why LivingOS?
-- 🌱 **Life-like agents** — a single seed regenerates entire worlds.  
-- ⚡ **Ultra-lightweight** — runs on a laptop, tablet, or phone. No GPUs, no clusters.  
-- 🌍 **Universal** — text, images, biosignals, even programs become agents.  
-- 🎶 **Multisensory** — agents carry color, sound, resonance, even tactile feedback.  
-- 🧭 **Freedom of choice** — no fixed outputs. The system generates superpositions, and you decide which reality to collapse.  
-
-This is not another chatbot.  
-It’s the **Internet of Living Agents**.  
-
----
-
-## 📦 Installation
-
-Clone the repository and install dependencies:
+Clone the repository and run the demo locally:
 
 ```bash
-git clone https://github.com/<Andrii-sat>/livingos-mini
+git clone https://github.com/Andrii-sat/livingos-mini.git
 cd livingos-mini
 pip install flask
-
-Requires Python 3.8+
-
-▶️ Usage
-
-Run the demo locally:
-
 python living_os_mini_wow.py
 
 Then open your browser at:
 
-http://127.0.0.1:5000
+👉 http://127.0.0.1:5000
 
-Controls
 
-ADD → type text → press button → new agent appears (✨).
+🎮 Controls
 
-MERGE → double-tap two nodes → hybrid agent is created.
+ADD → type text → press button → new agent appears (✨)
 
-EXPORT → saves the current world to vr_state.json.
+MERGE → double-tap two nodes → hybrid agent is created
 
-CLEAR → resets the world.
+EXPORT → saves the current world to vr_state.json
 
-DEMO → auto-creates 6 agents (sun, moon, river, forest, code, dream) and merges them — perfect for presentations.
+CLEAR → resets the world
+
+DEMO → auto-creates 6 agents (sun, moon, river, forest, code, dream) and merges them — perfect for presentations
 
 
 🌐 Beyond Demo — Coral & Solana
 
-Coral Protocol → each frsig can be registered as a service in Coral Registry.
+Coral Protocol → each frsig can be registered as a service in Coral Registry
 
 Solana → agents can be anchored on-chain:
+
 
 fcp://BC|d=<frsig://...>;chain=solana
 → txid=solana_tx_abcd1234
 
-Next step: mint agents as NFTs — share and exchange living worlds.
+🔮 Next step: mint agents as NFTs — share and exchange living worlds.
 
-💡 Together: Coral gives the network, Solana gives permanence, and LivingOS gives life.
+Together: Coral gives the network, Solana gives permanence, and LivingOS gives life.
 
-🚀 Roadmap
 
-[x] MiniOS demo (single file, Flask + web UI).
+🛠 Roadmap
 
-[x] Text ingestion, merging, exporting.
+[x] MiniOS demo (single file, Flask + web UI)
 
-[x] DEMO MODE for hackathon wow-effect.
+[x] Text ingestion, merging, exporting
 
-[x] Stubs for Coral & Solana integration.
+[x] DEMO MODE for hackathon wow-effect
 
-[ ] Multiuser rooms (ROOM/JOIN).
+[x] Stubs for Coral & Solana integration
 
-[ ] AI Bridge (LLMs as agents).
+[ ] Multiuser rooms (ROOM/JOIN)
 
-[ ] Full VR / WebXR fractal worlds.
+[ ] AI Bridge (LLMs as agents)
+
+[ ] Full VR / WebXR fractal worlds
+
 
 🏆 Hackathon Submission
 
-Submitted to Internet of Agents Hackathon 2025.
-Tracks: Agent Track + Application Track.
+Submitted to Internet of Agents Hackathon 2025
+Tracks: Agent Track + Application Track
 
 > We are not building another tool.
 We are building a new paradigm — a living internet where data becomes alive.
 
+
 👤 Author
 
-Created by [Andrii-sat]
+Created by Andrii-sat
 
 > Mechanical Engineer & AI Experimenter. Exploring systems where data becomes alive.
+
+
+📜 License
+
+This project is licensed under the terms of the MIT license.
+See the LICENSE file for details.
 
