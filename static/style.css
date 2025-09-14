@@ -1,1 +1,31 @@
-
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #0b0f1c;
+  color: #e6ecff;
+}
+header {
+  background: #111831;
+  padding: 12px;
+  text-align: center;
+}
+main {
+  padding: 10px;
+}
+#canvas {
+  width: 100%;
+  height: 80vh;
+  background: radial-gradient(circle at center, #061022, #050814);
+}
+button {
+  margin: 4px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: #203059;
+  color: white;
+  cursor: pointer;
+}
+button:hover {
+  background: #3651a3;
+}
