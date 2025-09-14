@@ -1,4 +1,8 @@
-# living_os_mini_wow.py — LivingOS Mini 
+# living_os_mini_wow.py — LivingOS Mini (showtime edition)
+# Flask one-file app + canvas UI.
+# Нове: MERGE кнопкою + дабл-тап (600мс), DEMO без автозливу, Auto-merge,
+# EXPORT/IMPORT, автокластеризація (силова), підсвітка зв’язків (hover/вибір),
+# пульсація вибраних, Story Mode (кінематографічне авто-злиття), статус-панель.
 # Python 3.8+ ; pip install flask
 
 import os, math, time, json, random, hashlib, uuid
