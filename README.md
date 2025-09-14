@@ -1,9 +1,11 @@
 # 🌌 LivingOS — Fractal Internet of Living Agents
 
-> **License:** MIT — © 2025 Andrii (Andrii-sat). See [LICENSE](./LICENSE).  
-> You may use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies under the MIT terms.
+> **License:** MIT (with attribution) — © 2025 Andrii (Andrii-sat).  
+> This project is free to use, modify, and distribute under MIT terms, **but attribution is required**.  
+> If you use LivingOS in research, publications, hackathons, or derivative works, you must credit:  
+> **Project: LivingOS** • **Author: Andrii (Andrii-sat)**  
 
-![License](https://img.shields.io/badge/License-MIT-blue.svg)
+![License](https://img.shields.io/badge/License-MIT--Attribution-blue.svg)
 ![Python](https://img.shields.io/badge/Python-3.8%2B-informational)
 ![Flask](https://img.shields.io/badge/Flask-3.x-black)
 ![Status](https://img.shields.io/badge/Status-Prototype%20%2F%20Showtime-success)
