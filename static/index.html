@@ -1,25 +1,23 @@
 <!doctype html>
-<meta charset="utf-8">
-<title>LivingOS — Showtime</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<link rel="stylesheet" href="/static/style.css">
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>LivingOS — Showtime</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 <header>
   <div class="container">
     <div class="row">
-      <input id="txt" class="input" placeholder="Type text → ADD to birth an agent" />
-      <button class="btn" id="btn-add">ADD</button>
-      <button class="btn" id="btn-merge" disabled>MERGE</button>
-      <button class="btn" id="btn-export">EXPORT</button>
-      <button class="btn" id="btn-import">IMPORT</button>
-      <button class="btn" id="btn-clear">CLEAR</button>
-      <button class="btn" id="btn-demo">DEMO</button>
-      <label class="badge">
-        <input type="checkbox" id="ck-auto"> Auto-merge
-      </label>
-      <button class="btn" id="btn-story">Story Mode</button>
-      <button class="btn" id="zoom-in">＋</button>
-      <button class="btn" id="zoom-out">－</button>
-      <button class="btn" id="zoom-reset">Reset</button>
+      <input id="txt" class="input" placeholder="Type text → ADD to create agent">
+      <button id="btn-add">ADD</button>
+      <button id="btn-merge" disabled>MERGE</button>
+      <button id="btn-export">EXPORT</button>
+      <button id="btn-import">IMPORT</button>
+      <button id="btn-clear">CLEAR</button>
+      <button id="btn-demo">DEMO</button>
+      <button id="btn-story">STORY MODE</button>
     </div>
   </div>
 </header>
@@ -27,11 +25,12 @@
 <pre id="log">Ready.</pre>
 <footer>
   <div class="tips">
-    <span class="tip">Tap nodes to select (2) → MERGE</span>
-    <span class="tip">Double-tap second = quick MERGE</span>
-    <span class="tip">Drag = move, Wheel/Pinch = zoom</span>
-    <span class="tip">Export/Import = persistent worlds</span>
+    <span class="tip">Tap nodes → select</span>
+    <span class="tip">Select 2 → MERGE</span>
+    <span class="tip">Wheel / Pinch → Zoom</span>
   </div>
   <div id="status">Agents: 0 • Links: 0</div>
 </footer>
-<script src="/static/app.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
