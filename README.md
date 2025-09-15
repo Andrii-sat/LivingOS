@@ -1,106 +1,66 @@
-# 🌌 LivingOS — Fractal Internet of Living Agents
+# 🌌 LivingOS — Fractal Internet of Living Agents  
 
-> **License:** MIT (with attribution) — © 2025 Andrii (Andrii-sat).  
-> This project is free to use, modify, and distribute under MIT terms, **but attribution is required**.  
-> If you use LivingOS in research, publications, hackathons, or derivative works, you must credit:  
-> **Project: LivingOS** • **Author: Andrii (Andrii-sat)**  
+> **License:** MIT (with attribution) — © 2025 Andrii Ilchenko (Andrii-sat).  
+> **Project:** LivingOS • **Author:** Andrii (Andrii-sat)  
 
-![License](https://img.shields.io/badge/License-MIT--Attribution-blue.svg)
-![Python](https://img.shields.io/badge/Python-3.8%2B-informational)
-![Flask](https://img.shields.io/badge/Flask-3.x-black)
-![Status](https://img.shields.io/badge/Status-Prototype%20%2F%20Showtime-success)
-![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen)
-
-**Not another chatbot.** LivingOS is a new paradigm — a *living internet* where data becomes **agents**.  
-Create agents from text, merge them into hybrids, and watch multidimensional worlds emerge in real time.
+![License](https://img.shields.io/badge/License-MIT--Attribution-blue.svg)  
+![Python](https://img.shields.io/badge/Python-3.8%2B-informational)  
+![Flask](https://img.shields.io/badge/Flask-3.x-black)  
+![Status](https://img.shields.io/badge/Status-Showtime--Prototype-success)  
+![Solana](https://img.shields.io/badge/Solana-ready-brightgreen)  
 
 ---
 
-## Table of Contents
-- [Why LivingOS](#-why-livingos)
-- [Features](#-features)
-- [Architecture](#-architecture)
-- [Project Structure](#-project-structure)
-- [Quick Start (Desktop)](#-quick-start-desktop)
-- [Quick Start (Android / Termux)](#-quick-start-android--termux)
-- [Usage Guide](#-usage-guide)
-- [HTTP API](#-http-api)
-- [Data Model](#-data-model)
-- [Roadmap](#-roadmap)
-- [Troubleshooting](#-troubleshooting)
-- [Ethics & Safety](#-ethics--safety)
-- [Author](#-author)
-- [License](#-license)
+## 🚀 Why LivingOS  
+
+LivingOS is **not another chatbot**.  
+It is a **new paradigm**: a *living internet* where data becomes **agents**.  
+
+- 🌀 **Fractal-native:** every text/code → `frsig://` deterministic identity  
+- 🔗 **Composable worlds:** agents merge into hybrids with lineage  
+- 🎇 **Real-time visuals:** cinematic agents & connections  
+- 🌐 **Blockchain anchoring:** Solana + Coral registry stubs included  
+
+⚡ LivingOS = **The Internet of Living Agents**.  
 
 ---
 
-## 🚀 Why LivingOS
-- **Lightweight & accessible** — runs on a laptop, or even on an Android tablet via Termux.
-- **Fractal-native** — agents use deterministic *fractal signatures* for compact identity & linking.
-- **Composable worlds** — MERGE agents to spawn hybrids and emergent structures.
-- **Hackathon-ready** — simple setup, wow-visuals, and a clear demo flow.
+## ✨ Features  
+
+### Core
+- 🌀 Fractal Agents (`frsig://…`) — deterministic, compact, self-descriptive  
+- 🔗 MERGE → hybrid child creation with inherited traits  
+- 🧹 CLEAR → reset world instantly  
+- 🖥️ Interactive canvas UI (dark theme, physics-based layout)  
+- ⚙️ REST API → simple external integration  
+
+### Showtime Layer
+- 🌍 Force-based physics layout (repulsion, springs, clustering, gravity)  
+- ✨ Glow, pulse, highlight on hover/selection  
+- 🎬 **Story Mode:** cinematic auto-merging sequence  
+- 🎇 Particle bursts for wow-effect  
+- 📦 Export/Import JSON world states  
+- ⚡ Scales to **10,000+ agents & links**  
 
 ---
 
-## ✨ Features
+## 🌱 Life Cycle of Agents  
 
-### Core (ships in this repo)
-- 🌀 **Fractal agents** — each agent has a deterministic signature `frsig://…` derived from text.
-- 🔗 **MERGE** — combine two agents; a hybrid child is created with lineage edges.
-- 🧹 **CLEAR** — reset the world to start fresh.
-- 🖥️ **Canvas UI** — interactive node/edge visualization in a clean dark theme.
-- ⚙️ **Simple REST API** — `POST /api/add`, `POST /api/merge`, `POST /api/clear`, `GET /state`.
+Every agent in **LivingOS** behaves like a living organism:  
 
-### Showtime layer (enhanced demo UX)
-- 💡 Selection **glow & pulse**; link highlighting on hover/selection.
-- 🌍 Force-based **physics layout** (repulsion, springs, soft clustering, gravity).
-- ✨ **Particle bursts** on create/merge for cinematic feedback.
-- 🎬 **Story Mode** — scripted, cinematic auto-merging sequence.
-- 📦 **Export / Import** world state (`vr_state.json`).
-- 🌐 **On-chain anchoring (stubs)** — Solana/Coral-style integration points.
+1. **Birth** 🐣 — created from text/code input, given a unique fractal identity (`frsig://...`).  
+2. **Interaction** 🔗 — agents connect, share meaning, and form living networks.  
+3. **Merge** 💞 — two (or more) agents merge into a hybrid with lineage.  
+4. **Evolution** 🌌 — hybrids evolve new traits, influencing the world’s dynamics.  
+5. **Legacy** 🧬 — every agent leaves a permanent `frsig://` signature, traceable across chains (e.g., Solana anchoring).  
 
-> The repo structure is ready for the Showtime layer; visuals/UX can be toggled purely in frontend without breaking the API.
-
----
-
-## 🧠 Architecture
-
-- **FractalSignature** — per-text deterministic seed → compact descriptor `frsig://{seed}:{…}`.
-- **GraphFractal** — in-memory graph (nodes/edges) with lineage; snapshot served via `/state`.
-- **MiniOS kernel** — `ingest_text`, `merge`, and exports; extendable with NLP/LLM bridges.
-- **Flask backend** — REST endpoints + static UI serving.
-- **Canvas frontend** — draws nodes/edges, handles interactions, demo/story flows.
+⚡ This cycle makes **data evolutionary and alive**, instead of static and dead.  
 
 ---
 
 ## 📁 Project Structure
 
-LivingOS/
- ├── LICENSE                   # MIT License
- ├── README.md                 # Project description (wow effect)
- ├── requirements.txt          # Dependencies (Flask, etc.)
- ├── src/                      # Python backend
- │   ├── __init__.py
- │   ├── living_os_showtime.py # Main entrypoint (Flask + kernel)
- │   ├── kernel/               # Core system logic
- │   │   ├── __init__.py
- │   │   ├── fractal_signature.py
- │   │   ├── graph_fractal.py
- │   │   ├── mini_os.py
- │   │   └── fcp_protocol.py
- │   └── api/                  # API layer
- │       ├── __init__.py
- │       └── routes.py
- ├── static/                   # Frontend assets
- │   ├── index.html
- │   ├── style.css
- │   └── app.js
- ├── tests/                    # Unit tests
- │   ├── __init__.py
- │   └── test_basic.py
- └── examples/                 # Example usage / demo data
-     └── demo_world.json
-
+LivingOS/ ├── LICENSE ├── README.md ├── PITCH.md ├── requirements.txt ├── src/ │   ├── living_os_showtime.py      # main entrypoint (Flask backend) │   ├── kernel/ │   │   ├── fractal_signature.py │   │   ├── graph_fractal.py │   │   ├── mini_os.py │   │   └── fcp_protocol.py │   └── api/ │       └── routes.py ├── static/ │   ├── index.html │   ├── style.css │   └── app.js ├── tests/ │   └── test_basic.py └── examples/ └── demo_world.json
 
 ---
 
@@ -110,9 +70,9 @@ LivingOS/
 git clone https://github.com/Andrii-sat/LivingOS.git
 cd LivingOS
 pip install -r requirements.txt
-python джерело/living_os_showtime.py
+python src/living_os_showtime.py
 
-Open in browser: http://127.0.0.1:5000
+Open browser: http://127.0.0.1:5000
 
 
 ---
@@ -126,162 +86,57 @@ pip install --upgrade pip
 git clone https://github.com/Andrii-sat/LivingOS.git
 cd LivingOS
 pip install -r requirements.txt
-python джерело/living_os_showtime.py
+python src/living_os_showtime.py
 
-Open your mobile browser at http://127.0.0.1:5000 (or the Termux IP printed in console).
-
-
----
-
-🕹️ Usage Guide
-
-Create an agent
-
-Type text → press ADD. A node with that text’s signature appears.
-
-
-Merge two agents
-
-Select two agents (UI) → press MERGE.
-A hybrid child node is created; edges connect parents → child.
-
-
-Reset
-
-Press CLEAR to wipe the world.
-
-
-Demo / Story
-
-Press DEMO to auto-spawn a world (e.g., sun, moon, river, forest, code, dream).
-
-Press Story Mode to watch a cinematic evolution (if enabled in UI).
-
+Open mobile browser: http://127.0.0.1:5000
 
 
 ---
 
 🔌 HTTP API
 
-GET  /state            → returns current graph snapshot (nodes, edges)
-POST /api/add          → body: { "text": "..." }          → { "desc": "frsig://..." }
-POST /api/merge        → body: { "a": "<desc>", "b": "<desc>" } → { "desc": "frsig://..." }
-POST /api/clear        → clears graph → { "ok": true }
+GET  /state → current graph snapshot
 
-desc is a descriptor string (e.g., frsig://12345678:...).
+POST /api/add → { "text": "..." } → frsig://…
 
-You can store desc and re-use it later to wire custom workflows.
+POST /api/merge → { "a": "desc", "b": "desc" } → hybrid
 
+POST /api/clear → reset
 
-
----
-
-🗃️ Data Model
-
-Node
-
-{
-  "id": "uuid",
-  "desc": "frsig://<seed>:…",
-  "summary": "user text (truncated)",
-  "seed": 123456789,
-  "t": 1736940000
-}
-
-Edge
-
-{
-  "src": "<node-id>",
-  "dst": "<node-id>"
-}
-
-Fractal signature
-
-frsig://{seed}:{...}
-
-Deterministic per text via a SHA-256-based 32-bit seed → stable identity/visual.
 
 
 ---
 
 🔮 Roadmap
 
-[x] Minimal kernel (ingest/merge), REST API, Canvas UI
+[x] Core ingestion & merge
 
-[x] DEMO world
+[x] DEMO & Story Mode
 
-[x] Showtime hooks in UI (glow, pulse, particles, physics)
-
-[ ] Story Mode polish & presets
-
-[ ] Export / Import world state
+[x] Export/Import states
 
 [ ] Multiuser rooms (ROOM/JOIN)
 
-[ ] AI Bridge (LLMs as agents)
+[ ] LLM Agents bridge
 
-[ ] Solana anchoring & NFT agents; Coral-style registry
+[ ] Solana anchoring + NFT Agents
 
+[ ] DAO of Living Worlds
 
-
----
-
-🛠️ Troubleshooting
-
-Server runs, but browser shows nothing
-
-Use http://127.0.0.1:5000 (or the IP Termux printed).
-
-Some Android browsers block localhost; try Chrome/Firefox mobile.
-
-
-pip or dependencies fail on Termux
-
-pip install --upgrade pip
-
-Then pip install -r requirements.txt
-
-
-Port conflict
-
-Change port in джерело/living_os_showtime.py:
-
-app.run(host="0.0.0.0", port=8080, debug=False)
-
-
-Stuck state
-
-Press CLEAR in the UI, or restart the server.
-
-
-
----
-
-🧭 Ethics & Safety
-
-LivingOS embraces ethical freedom of choice and transparent behavior.
-It is intended for beneficial, creative and research use.
-Avoid harmful, deceptive or privacy-violating deployments.
 
 
 ---
 
 👤 Author
 
-Andrii (Andrii-sat)
-
-Mechanical Engineer & AI Experimenter
-
-Focus: AI systems, fractal computing, blockchain integrations (Solana), educational tooling
+Andrii Ilchenko (Andrii-sat)
+Mechanical Engineer • AI Experimenter • Blockchain Innovator
 
 GitHub: Andrii-sat
-
 
 
 ---
 
 📜 License
 
-MIT License — © 2025 Andrii (Andrii-sat). See LICENSE for full text.
-
-> Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction…
+MIT (with attribution) — © 2025 Andrii Ilchenko (Andrii-sat)
