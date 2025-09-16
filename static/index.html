@@ -1,23 +1,29 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title>LivingOS — Showtime</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="style.css">
-</head>
+<meta charset="utf-8">
+<title>LivingOS — Showtime (frsig://)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<link rel="stylesheet" href="/style.css">
 <body>
 <header>
   <div class="container">
     <div class="row">
-      <input id="txt" class="input" placeholder="Type text → ADD to create agent">
-      <button id="btn-add">ADD</button>
-      <button id="btn-merge" disabled>MERGE</button>
-      <button id="btn-export">EXPORT</button>
-      <button id="btn-import">IMPORT</button>
-      <button id="btn-clear">CLEAR</button>
-      <button id="btn-demo">DEMO</button>
-      <button id="btn-story">STORY MODE</button>
+      <input id="txt" class="input" placeholder="Type text → ADD">
+      <button class="btn" id="btn-add">ADD</button>
+      <button class="btn" id="btn-merge" disabled>MERGE</button>
+      <button class="btn" id="btn-export">EXPORT</button>
+      <button class="btn" id="btn-import">IMPORT</button>
+      <button class="btn" id="btn-clear">CLEAR</button>
+      <button class="btn" id="btn-demo">DEMO (2k)</button>
+      <button class="btn" id="btn-demo10k">DEMO (10k)</button>
+      <button class="btn" id="btn-story">Story Mode</button>
+      <button class="btn" id="btn-chain">CHAIN</button>
+      <button class="btn" id="btn-mine">MINE</button>
+      <label><input type="checkbox" id="auto-mine"> Auto-mine</label>
+      <button class="btn" id="btn-health">HEALTH</button>
+      <button class="btn" id="btn-version">VERSION</button>
+      <button class="btn" id="zoom-in">＋</button>
+      <button class="btn" id="zoom-out">－</button>
+      <button class="btn" id="zoom-reset">Reset</button>
     </div>
   </div>
 </header>
@@ -25,12 +31,11 @@
 <pre id="log">Ready.</pre>
 <footer>
   <div class="tips">
-    <span class="tip">Tap nodes → select</span>
-    <span class="tip">Select 2 → MERGE</span>
-    <span class="tip">Wheel / Pinch → Zoom</span>
+    <span class="tip">Tap to select (2) → MERGE</span>
+    <span class="tip">Double-tap second = quick MERGE</span>
+    <span class="tip">Drag to move • Wheel/Pinch to zoom</span>
   </div>
   <div id="status">Agents: 0 • Links: 0</div>
 </footer>
-<script src="app.js"></script>
+<script src="/app.js"></script>
 </body>
-</html>
