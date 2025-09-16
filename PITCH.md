@@ -10,7 +10,7 @@
 
 ---
 
-## 🔥 Why This Matters (emotional hook)  
+## 🔥 Why This Matters  
 - Text is linear. Numbers are flat. **Fractals are alive.**  
 - Every pattern carries more than data: it carries *emotion, geometry, time, ancestry*.  
 - Imagine showing a jury how “sun” and “moon” merge — not in text, not in code — but into a **new living identity** with a visible fractal signature (`frsig://…`).  
@@ -49,7 +49,7 @@
 
 ---
 
-## 🎬 Live Demo Flow (2 minutes, guaranteed wow)  
+## 🎬 Live Demo Flow  
 1. Type `sun` → ADD → fractal agent appears (`frsig://…`).  
 2. Type `moon` → ADD → second agent.  
 3. MERGE → hybrid child, lineage edges appear in real-time.  
@@ -70,7 +70,7 @@
 
 ---
 
-## 📊 Tokenomics Sketch (for investors)  
+## 📊 Tokenomics Sketch  
 - **Anchoring Fee**: pay to anchor `frsig_root` → on-chain permanence.  
 - **Marketplace Fee**: trade lineage NFTs → ancestry adds value.  
 - **Consensus Evolution**: demo PoW → migrate to PoS/PoA with staked validators.  
