@@ -1,27 +1,15 @@
-import time, hashlib, json
-
+import time
+import hashlib
 
 class Block:
-    def __init__(self, index, parent_hash, txs, difficulty=1, nonce=0, ts=None, block_hash=None):
+    def __init__(self, index, ts, parent_hash, txs, difficulty, nonce, hash_):
         self.index = index
-        self.ts = ts or time.time()
-        self.parent = parent_hash  # alias for parent hash
-        self.txs = txs or []
+        self.ts = ts
+        self.parent = parent_hash   # тепер явно зберігається parent
+        self.txs = txs
         self.difficulty = difficulty
         self.nonce = nonce
-        self.hash = block_hash or self.compute_hash()
-
-    def compute_hash(self):
-        data = {
-            "index": self.index,
-            "ts": self.ts,
-            "parent": self.parent,
-            "txs": self.txs,
-            "difficulty": self.difficulty,
-            "nonce": self.nonce,
-        }
-        s = json.dumps(data, sort_keys=True).encode()
-        return hashlib.sha256(s).hexdigest()
+        self.hash = hash_
 
     def to_dict(self):
         return {
@@ -34,28 +22,31 @@ class Block:
             "hash": self.hash,
         }
 
-
 class Chain:
     def __init__(self):
         self.blocks = []
-        self.pending = []  # mempool
-        self.create_genesis()
+        self.pending = []   # мемпул для транзакцій
+        self.genesis()
 
-    def create_genesis(self):
-        if not self.blocks:
-            genesis = Block(index=0, parent_hash="0" * 64, txs=[], difficulty=1, nonce=0)
-            self.blocks.append(genesis)
+    def genesis(self):
+        genesis_block = Block(
+            index=1,
+            ts=time.time(),
+            parent_hash="0"*64,
+            txs=["GENESIS"],
+            difficulty=1,
+            nonce=0,
+            hash_="GENESIS_HASH"
+        )
+        self.blocks.append(genesis_block)
 
-    def add_tx(self, tx_type, payload):
-        tx = {"type": tx_type, "payload": payload, "t": time.time()}
-        self.pending.append(tx)
-        return tx
+    def add_tx(self, txid, payload):
+        self.pending.append({"txid": txid, "payload": payload})
+        return True
 
-    def add_block(self, block: Block):
+    def add_block(self, block):
         self.blocks.append(block)
-
-    def tip(self):
-        return self.blocks[-1]
+        self.pending.clear()
 
     def info(self):
         return {
