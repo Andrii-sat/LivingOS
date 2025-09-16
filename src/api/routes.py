@@ -14,7 +14,6 @@ chain = Chain()
 miner = Miner(chain)
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-STATIC_DIR = os.path.join(ROOT, "static")
 STATE_PATH = os.path.join(ROOT, "vr_state.json")
 
 # ---------- health / version ----------
@@ -49,29 +48,29 @@ def api_fcp():
             d = kernel.ingest_text(args.get("text", ""), x=x, y=y)
             kernel.export_state(STATE_PATH)
             chain.add_tx({"op": "ADD", "desc": d, "x": x, "y": y})
-            return jsonify({"resp": fcp_pack("OK", d=d)})
+            return jsonify({"resp": fcp_pack("OK", d=d), "ok": True})
 
         elif op == "M":
             d = kernel.merge(args["a"], args["b"], float(args.get("mix", "0.5")))
             kernel.export_state(STATE_PATH)
             chain.add_tx({"op": "MERGE", "a": args["a"], "b": args["b"], "mix": float(args.get("mix", 0.5))})
-            return jsonify({"resp": fcp_pack("OK", d=d)})
+            return jsonify({"resp": fcp_pack("OK", d=d), "ok": True})
 
         elif op == "E":
             p = kernel.export_state(STATE_PATH)
             chain.add_tx({"op": "EXPORT", "path": p})
-            return jsonify({"resp": fcp_pack("OK", path=p)})
+            return jsonify({"resp": fcp_pack("OK", path=p), "ok": True})
 
         elif op == "CLR":
             kernel.clear()
             kernel.export_state(STATE_PATH)
             chain.add_tx({"op": "CLEAR"})
-            return jsonify({"resp": fcp_pack("OK", cleared=1)})
+            return jsonify({"resp": fcp_pack("OK", cleared=1), "ok": True})
 
         else:
-            return jsonify({"resp": fcp_pack("ERR", reason=f"unknown op {op}")})
+            return jsonify({"resp": fcp_pack("ERR", reason=f"unknown op {op}"), "ok": False})
     except Exception as e:
-        return jsonify({"resp": fcp_pack("ERR", reason=str(e))})
+        return jsonify({"resp": fcp_pack("ERR", reason=str(e)), "ok": False})
 
 # ---------- Import / Export ----------
 @bp.route("/api/import", methods=["POST"])
@@ -99,9 +98,7 @@ def chain_info():
 def mine_once():
     body = request.get_json(silent=True) or {}
     max_iters = int(body.get("max_iters", 200000))
-    difficulty = body.get("difficulty")
-    if difficulty is not None:
-        difficulty = int(difficulty)
+    difficulty = int(body.get("difficulty", 2))
     blk = miner.mine_once(max_iters=max_iters, difficulty=difficulty)
     if not blk:
         return jsonify({"mined": False, "reason": "no_solution"}), 200
