@@ -1,23 +1,25 @@
-from flask import Flask, Response, jsonify, request
-import os, json, time
+"""
+LivingOS Showtime — Flask entrypoint
+"""
+import os
+from flask import Flask, send_from_directory
+from src.api.routes import bp as api_bp
 
-from src.kernel.mini_os import MiniOS
-from src.kernel.fcp_protocol import fcp_pack, fcp_parse
-from src.api.routes import init_routes
-
-# ⚡️ Вказуємо шлях до static/
 app = Flask(__name__, static_folder="../static", static_url_path="")
-
-kernel = MiniOS()
-
-# Ініціалізація API
-init_routes(app, kernel)
+app.register_blueprint(api_bp)
 
 @app.route("/")
 def index():
-    # Віддає index.html зі статичної папки
-    return app.send_static_file("index.html")
+    return send_from_directory(app.static_folder, "index.html")
+
+@app.route("/app.js")
+def app_js():
+    return send_from_directory(app.static_folder, "app.js")
+
+@app.route("/style.css")
+def style_css():
+    return send_from_directory(app.static_folder, "style.css")
 
 if __name__ == "__main__":
-    print("[LivingOS Showtime] running → http://0.0.0.0:5000")
+    print("[LivingOS] running at http://0.0.0.0:5000")
     app.run(host="0.0.0.0", port=5000, debug=False)
