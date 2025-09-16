@@ -1,5 +1,34 @@
+# Python
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+*.log
+
+# Virtual environments
 .env
+.venv
+env/
 venv/
+ENV/
+.ipynb_checkpoints/
+
+# VSCode / IDE
+.vscode/
+.idea/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Project state files (runtime only)
 vr_state.json
+chain_state.json
+
+# Caches
+.cache/
+dist/
+build/
