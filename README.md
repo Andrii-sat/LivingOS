@@ -8,7 +8,10 @@
 ![Flask](https://img.shields.io/badge/Flask-3.x-black)  
 ![Solana](https://img.shields.io/badge/Solana-ready-brightgreen)  
 ![Status](https://img.shields.io/badge/Status-Showtime--Prototype-success)  
-![Build](https://github.com/Andrii-sat/LivingOS/actions/workflows/tests.yml/badge.svg)  
+![Build](https://github.com/Andrii-sat/LivingOS/actions/workflows/tests.yml/badge.svg) 
+![Build](https://github.com/Andrii-sat/LivingOS/actions/workflows/tests.yml/badge.svg)
+![Lint](https://github.com/Andrii-sat/LivingOS/actions/workflows/lint.yml/badge.svg)
+![Coverage](https://github.com/Andrii-sat/LivingOS/actions/workflows/coverage.yml/badge.svg)
 
 ---
 
@@ -68,11 +71,16 @@ Every agent in **LivingOS** behaves like a living organism:
 ## 📁 Project Structure
 
 LivingOS/
-├── .gitignore
 ├── LICENSE
 ├── README.md
 ├── PITCH.md
 ├── requirements.txt
+├── .gitignore
+├── .github/
+│   └── workflows/
+│       ├── tests.yml          
+│       ├── lint.yml           
+│       └── coverage.yml       
 ├── src/
 │   ├── __init__.py
 │   ├── living_os_showtime.py
@@ -93,9 +101,7 @@ LivingOS/
 │   └── app.js
 ├── tests/
 │   ├── __init__.py
-│   ├── test_basic.py
-│   ├── test_chain.py
-│   └── test_api.py        
+│   └── test_basic.py
 └── examples/
     └── demo_world.json
 
