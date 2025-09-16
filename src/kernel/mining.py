@@ -1,27 +1,29 @@
-import hashlib, time
+import time
+import hashlib
 from .blockchain import Block
-
 
 class Miner:
     def __init__(self, chain):
         self.chain = chain
 
-    def mine_once(self, max_iters=100000, difficulty=2):
-        if not self.chain.pending:
-            return None  # nothing to mine
+    def mine_once(self, max_iters=200000, difficulty=2):
+        parent = self.chain.blocks[-1]
+        txs = list(self.chain.pending)
+        if not txs:
+            return None
 
-        parent = self.chain.tip()
-        index = parent.index + 1
-        txs = self.chain.pending[:]
-        self.chain.pending.clear()
-
-        prefix = "0" * difficulty
-        nonce = 0
-        ts = time.time()
-        while nonce < max_iters:
-            blk = Block(index=index, parent_hash=parent.hash, txs=txs, difficulty=difficulty, nonce=nonce, ts=ts)
-            if blk.hash.startswith(prefix):
+        for nonce in range(max_iters):
+            h = hashlib.sha256(f"{parent.hash}{nonce}".encode()).hexdigest()
+            if h.startswith("0" * difficulty):
+                blk = Block(
+                    index=parent.index + 1,
+                    ts=time.time(),
+                    parent_hash=parent.hash,
+                    txs=txs,
+                    difficulty=difficulty,
+                    nonce=nonce,
+                    hash_=h
+                )
                 self.chain.add_block(blk)
                 return blk
-            nonce += 1
         return None
