@@ -20,6 +20,8 @@ def app_js():
 def style_css():
     return send_from_directory(app.static_folder, "style.css")
 
+
 if __name__ == "__main__":
-    print("[LivingOS] running at http://0.0.0.0:5000")
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
