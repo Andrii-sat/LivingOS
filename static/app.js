@@ -1,32 +1,53 @@
+// ===== UI scaffolding =====
 const cvs = document.getElementById('canvas'), ctx = cvs.getContext('2d');
-const logEl = document.getElementById('log'), statusEl = document.getElementById('status');
-const log = (...a)=>{ const out=a.join(" "); logEl.textContent=out; console.log(out); };
-
-function resize(){ cvs.width = innerWidth; cvs.height = innerHeight - 172; } resize(); addEventListener('resize', resize);
-
-// UI elements
+const log = (...a)=>{ const out=a.join(" "); document.getElementById('log').textContent = out; console.log(out); };
+const statusEl = document.getElementById('status');
 const btnAdd = document.getElementById('btn-add');
 const btnMerge = document.getElementById('btn-merge');
 const btnExport = document.getElementById('btn-export');
 const btnImport = document.getElementById('btn-import');
 const btnClear = document.getElementById('btn-clear');
 const btnDemo = document.getElementById('btn-demo');
+const btnDemo10k = document.getElementById('btn-demo10k');
 const btnStory = document.getElementById('btn-story');
-const ckAuto = document.getElementById('ck-auto');
-const input = document.getElementById('txt');
+const btnChain = document.getElementById('btn-chain');
+const btnMine = document.getElementById('btn-mine');
+const autoMineEl = document.getElementById('auto-mine');
+const btnHealth = document.getElementById('btn-health');
+const btnVersion = document.getElementById('btn-version');
 const btnZoomIn = document.getElementById('zoom-in');
 const btnZoomOut = document.getElementById('zoom-out');
 const btnZoomReset = document.getElementById('zoom-reset');
+const input = document.getElementById('txt');
 
-// world/camera
+function resize(){ cvs.width = innerWidth; cvs.height = innerHeight - 172; }
+resize(); addEventListener('resize', resize);
+
+// ===== World state =====
 let cam = {x:0,y:0,scale:1};
 let nodes=[], edges=[], positions={};
 let sim = {}; // id -> {x,y,vx,vy,m,seed,pulse}
 let particles=[];
 let selected=new Set(), lastTapTime=0, lastTapId=null, hoverId=null;
+let adj = new Map(); // id -> Set(nei)
 
-// adjacency
-let adj = new Map();
+// ===== Helpers =====
+function rndColor(seed){ return '#'+((seed&0xFFFFFF).toString(16)).padStart(6,'0'); }
+function worldToScreen(p){ return {x:(p.x - cam.x)*cam.scale + cvs.width/2, y:(p.y - cam.y)*cam.scale + cvs.height/2}; }
+function screenToWorld(p){ return {x:(p.x - cvs.width/2)/cam.scale + cam.x, y:(p.y - cvs.height/2)/cam.scale + cam.y}; }
+
+async function apiFCP(op, kv={}) {
+  const pairs = Object.entries(kv).map(([k,v]) => `${k}=${encodeURIComponent(v)}`).join(';');
+  const msg = `fcp://${op}|${pairs}`;
+  const r = await fetch('/api/fcp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({msg})});
+  const j = await r.json(); return j.resp;
+}
+async function fetchState(){ const r = await fetch('/state'); return await r.json(); }
+async function fetchChain(){ const r = await fetch('/chain'); return await r.json(); }
+async function fetchMine(){ const r = await fetch('/mine',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({})}); return await r.json(); }
+async function fetchHealth(){ const r = await fetch('/health'); return await r.json(); }
+async function fetchVersion(){ const r = await fetch('/version'); return await r.json(); }
+
 function rebuildAdj(){
   adj.clear();
   for(const n of nodes) adj.set(n.id, new Set());
@@ -38,94 +59,7 @@ function rebuildAdj(){
   }
 }
 
-function rndColor(seed){ return '#'+((seed&0xFFFFFF).toString(16)).padStart(6,'0'); }
-function worldToScreen(p){ return {x:(p.x - cam.x)*cam.scale + cvs.width/2, y:(p.y - cam.y)*cam.scale + cvs.height/2}; }
-function screenToWorld(p){ return {x:(p.x - cvs.width/2)/cam.scale + cam.x, y:(p.y - cvs.height/2)/cam.scale + cam.y}; }
-
-async function apiFCP(op, kv={}) {
-  const pairs = Object.entries(kv).map(([k,v]) => `${k}=${encodeURIComponent(v)}`).join(';');
-  const msg = `fcp://${op}|${pairs}`;
-  const r = await fetch('/api/fcp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({msg})});
-  const j = await r.json(); return j.resp;
-}
-
-function randomSpawn(){
-  const pad = 140;
-  const sx = Math.random()*(cvs.width - pad*2) + pad;
-  const sy = Math.random()*(cvs.height - pad*2) + pad + 10;
-  const w = screenToWorld({x:sx,y:sy});
-  return {x:w.x, y:w.y};
-}
-
-async function addText(){
-  const v = (input.value || "hello agent").trim();
-  const p = randomSpawn();
-  const resp = await apiFCP('T', {text: v, x: p.x, y: p.y});
-  log("🌌 Created agent:", v);
-  await syncState(); burstParticles(lastNodeCenter(), 22);
-}
-
-async function doExport(){ await apiFCP('E'); log("💾 Exported → vr_state.json"); await syncState(); }
-async function doImport(){
-  const raw = prompt("Paste JSON state (vr_state.json) here:");
-  if(!raw) return;
-  try{
-    const data = JSON.parse(raw);
-    const r = await fetch('/import', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
-    const j = await r.json();
-    log(j.ok ? "📥 Imported OK" : "Import error");
-    await syncState(true);
-  }catch(e){ alert("Bad JSON"); }
-}
-async function doClear(){ await apiFCP('CLR'); log("🧹 Cleared"); await syncState(true); }
-
-async function demo(){
-  await doClear();
-  const words=["sun","moon","river","forest","code","dream"];
-  for (const w of words){
-    const p = randomSpawn();
-    await apiFCP('T', {text: w, x: p.x, y: p.y});
-    await syncState(); burstParticles(lastNodeCenter(), 16);
-  }
-  log("✨ DEMO world created. Toggle Auto-merge or use MERGE.");
-  if (ckAuto.checked){
-    const pick = (name)=> nodes.find(n=> (n.summary||"").startsWith(name) || (n.desc||"").includes(name));
-    const pairs = [["sun","moon"],["river","forest"],["code","dream"]];
-    for (const [A,B] of pairs){
-      const a = pick(A), b = pick(B);
-      if (a && b) { await mergeByIds(a.id, b.id); await new Promise(r=>setTimeout(r, 600)); }
-    }
-  }
-}
-
-async function storyMode(){
-  if (nodes.length < 3) { await demo(); }
-  log("🎬 Story Mode: evolving world…");
-  let pool = [...nodes.map(n=>n.id)];
-  function byDegree(id){ return (adj.get(id)?.size || 0); }
-  pool.sort((a,b)=>byDegree(b)-byDegree(a));
-  while (pool.length > 1){
-    const a = pool.shift();
-    let best=null, bestD=1e9;
-    for(const cand of pool){
-      const da = (adj.get(a)?.has(cand) ? 0 : 1);
-      const pa = sim[a], pb = sim[cand];
-      const dist = pa&&pb ? Math.hypot(pa.x-pb.x, pa.y-pb.y) : 999;
-      const score = da*1000 + dist;
-      if (score < bestD) { bestD = score; best = cand; }
-    }
-    if (!best) break;
-    await mergeByIds(a, best);
-    await new Promise(r=>setTimeout(r, 700));
-    await syncState();
-    pool = [...nodes.map(n=>n.id)];
-    pool.sort((x,y)=>byDegree(y)-byDegree(x));
-  }
-  log("🏁 Story complete.");
-}
-
-// state
-async function fetchState(){ const r = await fetch('/state'); return await r.json(); }
+// ===== State sync =====
 async function syncState(reset=false){
   const s = await fetchState(); nodes=s.nodes; edges=s.edges; positions=s.positions;
   rebuildAdj();
@@ -138,26 +72,29 @@ async function syncState(reset=false){
   }
   statusEl.textContent = `Agents: ${nodes.length} • Links: ${edges.length}`;
 }
-
 function lastNodeCenter(){
   if(!nodes.length) return {x:cvs.width/2,y:cvs.height/2};
   const n=nodes[nodes.length-1], s=sim[n.id]; if(!s) return {x:cvs.width/2,y:cvs.height/2};
   return worldToScreen({x:s.x,y:s.y});
 }
 
-// physics
+// ===== Physics (cluster-friendly) =====
 function stepPhysics(){
-  const kSpring=0.002, kRepel=2000, damp=0.86, kCluster=0.006, rest=110;
+  const kSpring=0.0016, kRepel=1600, damp=0.86, kCluster=0.004, rest=110;
 
-  for(let i=0;i<nodes.length;i++){
-    for(let j=i+1;j<nodes.length;j++){
+  const N = nodes.length;
+  const STEP = (N>3000)? 3 : 1;
+  for(let i=0;i<N;i+=STEP){
+    for(let j=i+1;j<N;j+=STEP){
       const A=sim[nodes[i].id], B=sim[nodes[j].id]; if(!A||!B) continue;
       let dx=B.x-A.x, dy=B.y-A.y; let d2=dx*dx+dy*dy; if(d2<0.01) d2=0.01;
       const f=kRepel/d2; const invd=1/Math.sqrt(d2); dx*=invd; dy*=invd;
       A.vx -= f*dx/A.m; A.vy -= f*dy/A.m; B.vx += f*dx/B.m; B.vy += f*dy/B.m;
     }
   }
-  for(const e of edges){
+  const E = edges.length, E_STEP = (E>6000)? 3 : 1;
+  for(let idx=0; idx<E; idx+=E_STEP){
+    const e = edges[idx]; if(!e) continue;
     const A=sim[e.src], B=sim[e.dst]; if(!A||!B) continue;
     let dx=B.x-A.x, dy=B.y-A.y; const dist=Math.sqrt(dx*dx+dy*dy)||1;
     const ext=dist-rest; const ux=dx/dist, uy=dy/dist;
@@ -166,17 +103,16 @@ function stepPhysics(){
   }
   for(const n of nodes){
     const s=sim[n.id]; if(!s) continue;
-    s.vx += (-s.x)*0.0005; s.vy += (-s.y)*0.0005;
-  }
-  for(const n of nodes){ const s=sim[n.id]; if(!s) continue; s.vx*=damp; s.vy*=damp; s.x+=s.vx; s.y+=s.vy;
+    s.vx += (-s.x)*0.0004; s.vy += (-s.y)*0.0004;
+    s.vx*=damp; s.vy*=damp; s.x+=s.vx; s.y+=s.vy;
     if (selected.has(n.id)) s.pulse = Math.min(1, s.pulse + 0.07); else s.pulse = Math.max(0, s.pulse - 0.05);
   }
 }
 
-// particles
-function burstParticles(center, n=28, color="#7cf6d8"){
+// ===== Particles =====
+function burstParticles(center, n=24, color="#7cf6d8"){
   for(let i=0;i<n;i++){
-    const a=(Math.PI*2)*Math.random(), sp=1+Math.random()*3.8;
+    const a=(Math.PI*2)*Math.random(), sp=1+Math.random()*3.2;
     particles.push({x:center.x,y:center.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,color});
   }
 }
@@ -188,20 +124,19 @@ function drawParticles(){
   ctx.globalAlpha=1.0; particles = particles.filter(p=>p.life>0);
 }
 
-// render
+// ===== Rendering =====
 function draw(){
   ctx.clearRect(0,0,cvs.width,cvs.height);
 
-  // edges (background)
-  ctx.lineWidth=1.1; ctx.strokeStyle="rgba(80,120,200,0.35)"; ctx.shadowColor="rgba(100,140,255,0.15)"; ctx.shadowBlur=3;
-  for(const e of edges){
-    const A=sim[e.src], B=sim[e.dst]; if(!A||!B) continue;
+  const MAX_EDGES = 6000;
+  ctx.lineWidth=1.05; ctx.strokeStyle="rgba(80,120,200,0.35)";
+  const step = Math.max(1, Math.floor(edges.length / MAX_EDGES));
+  for(let i=0;i<edges.length;i+=step){
+    const e=edges[i]; const A=sim[e.src], B=sim[e.dst]; if(!A||!B) continue;
     const a=worldToScreen(A), b=worldToScreen(B);
     ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
   }
-  ctx.shadowBlur=0;
 
-  // highlighted links
   if (hoverId || selected.size){
     const focus = hoverId ? new Set([hoverId]) : new Set(selected);
     for(const fid of [...focus]){
@@ -216,20 +151,15 @@ function draw(){
     }
   }
 
-  // nodes
   for(const n of nodes){
     const s=sim[n.id]; if(!s) continue; const p=worldToScreen(s); const base=10+(n.weight||1)*3;
     const r = base + s.pulse*3;
 
-    // glow
     ctx.beginPath(); ctx.arc(p.x,p.y,r+8,0,Math.PI*2); ctx.fillStyle="rgba(100,160,255,0.08)"; ctx.fill();
-
-    // core
     const grad=ctx.createRadialGradient(p.x,p.y,2,p.x,p.y,r); const col=rndColor(s.seed||0);
     grad.addColorStop(0,col); grad.addColorStop(1,"#0a1230");
     ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fillStyle=grad; ctx.fill();
 
-    // label with halo
     ctx.save();
     ctx.font="12px system-ui";
     ctx.lineWidth=3; ctx.strokeStyle="#0b1220"; ctx.fillStyle="#a8b8ff";
@@ -244,11 +174,10 @@ function draw(){
       ctx.beginPath(); ctx.arc(p.x,p.y,r+3,0,Math.PI*2); ctx.stroke();
     }
   }
-
   drawParticles();
 }
 
-// picking
+// ===== Picking & interactions =====
 function nodeAt(x,y){
   for(let i=nodes.length-1;i>=0;i--){
     const n=nodes[i], s=sim[n.id]; if(!s) continue;
@@ -256,29 +185,24 @@ function nodeAt(x,y){
     const dx=x-p.x, dy=y-p.y; if(dx*dx+dy*dy<=r*r) return n.id;
   } return null;
 }
-
-// interactions
 let dragging=null, dragOffset={x:0,y:0};
-
 cvs.addEventListener('pointermove', ev=>{
   const id=nodeAt(ev.clientX, ev.clientY);
   hoverId = id;
 });
-
 cvs.addEventListener('pointerdown', ev=>{
   const id=nodeAt(ev.clientX, ev.clientY);
   if(id){
     const now=performance.now();
     if(selected.has(id) && lastTapId && lastTapId!==id && (now-lastTapTime)<600){
-      mergeByIds(lastTapId, id); selected.clear(); dragging=null; btnMerge.disabled = true; return;
+      mergeByIds(lastTapId, id); selected.clear(); dragging=null; return;
     }
-    if(selected.has(id)) selected.delete(id);
-    else {
+    if(selected.has(id)) selected.delete(id); else {
       if (selected.size >= 2) selected.clear();
       selected.add(id);
+      btnMerge.disabled = (selected.size !== 2);
     }
     lastTapTime=now; lastTapId=id;
-    btnMerge.disabled = (selected.size !== 2);
 
     dragging=id;
     const s=sim[id], w=screenToWorld({x:ev.clientX,y:ev.clientY});
@@ -290,7 +214,6 @@ cvs.addEventListener('pointerdown', ev=>{
   }
   cvs.setPointerCapture(ev.pointerId);
 });
-
 cvs.addEventListener('pointermove', ev=>{
   if(dragging && dragging!=="pan"){
     const s=sim[dragging]; const w=screenToWorld({x:ev.clientX,y:ev.clientY});
@@ -300,11 +223,7 @@ cvs.addEventListener('pointermove', ev=>{
     cam.x=dragOffset.origX-dx; cam.y=dragOffset.origY-dy;
   }
 });
-
-cvs.addEventListener('pointerup', ev=>{
-  dragging=null; cvs.releasePointerCapture(ev.pointerId);
-});
-
+cvs.addEventListener('pointerup', ev=>{ dragging=null; cvs.releasePointerCapture(ev.pointerId); });
 cvs.addEventListener('wheel', ev=>{
   ev.preventDefault();
   const factor=Math.exp(ev.deltaY*-0.001);
@@ -325,20 +244,89 @@ async function mergeByIds(idA,idB){
   log(`⚡ Merged: ${(a.summary||'A')} + ${(b.summary||'B')}`);
   await syncState();
   burstParticles(lastNodeCenter(), 36, "#60a5fa");
+  if(autoMineEl.checked) await mineOnce();
 }
 
-// buttons
-btnAdd.onclick = addText;
-btnMerge.onclick = () => {
-  if (selected.size !== 2) return;
-  const [a,b] = [...selected]; mergeByIds(a,b); selected.clear(); btnMerge.disabled = true;
+// ===== Actions =====
+btnAdd.onclick = async ()=>{
+  const v = (input.value || "hello agent").trim();
+  const pad = 120, sx = Math.random()*(cvs.width - pad*2) + pad, sy = Math.random()*(cvs.height - pad*2) + pad;
+  const w = screenToWorld({x:sx,y:sy});
+  await apiFCP("T", { text: v, x: w.x, y: w.y });
+  await syncState(); burstParticles(lastNodeCenter(), 22);
+  if(autoMineEl.checked) await mineOnce();
 };
-btnExport.onclick = doExport;
-btnImport.onclick = doImport;
-btnClear.onclick = doClear;
-btnDemo.onclick  = demo;
+btnMerge.onclick = ()=>{ if (selected.size===2){ const [a,b]=[...selected]; mergeByIds(a,b); selected.clear(); btnMerge.disabled=true; }};
+btnExport.onclick = async ()=>{ await apiFCP('E'); log("💾 Exported → vr_state.json"); };
+btnImport.onclick = async ()=>{
+  const raw = prompt("Paste vr_state.json here:");
+  if(!raw) return;
+  try{
+    const data = JSON.parse(raw);
+    const r = await fetch('/api/import', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)});
+    const j = await r.json(); log(j.ok ? "📥 Imported OK" : "Import error"); await syncState(true);
+  }catch(e){ alert("Bad JSON"); }
+};
+btnClear.onclick = async ()=>{ await apiFCP('CLR'); await syncState(true); log("🧹 Cleared"); if(autoMineEl.checked) await mineOnce(); };
+
+btnDemo.onclick = ()=> demo(2000);
+btnDemo10k.onclick = ()=> demo(10000);
+
+async function demo(count){
+  await btnClear.onclick();
+  const batch=200;
+  for(let i=0;i<count;i++){
+    const label = "agent_"+i;
+    const pad = 120, sx = Math.random()*(cvs.width - pad*2) + pad, sy = Math.random()*(cvs.height - pad*2) + pad;
+    const w = screenToWorld({x:sx,y:sy});
+    await apiFCP("T", { text: label, x: w.x, y: w.y });
+    if (i%batch===0){ await syncState(); log(`🌌 Created ${i+1}/${count}`); }
+  }
+  await syncState(true);
+  log(`✅ DEMO complete: ${count} agents.`);
+}
+
+async function storyMode(){
+  if (nodes.length < 6) await demo(50);
+  log("🎬 Story Mode: evolving…");
+  const degree = id => (adj.get(id)?.size || 0);
+  for(let step=0; step<Math.min(20,nodes.length-1); step++){
+    nodes.sort((a,b)=>degree(b.id)-degree(a.id));
+    const a = nodes[0]?.id, b = nodes[1]?.id;
+    if(a && b) { await mergeByIds(a,b); await new Promise(r=>setTimeout(r, 500)); await syncState(); }
+  }
+  log("🏁 Story complete.");
+}
 btnStory.onclick = storyMode;
 
-// main loop
+// ===== Blockchain buttons =====
+btnChain.onclick = async ()=>{
+  const info = await fetchChain();
+  log("⛓️ PROTOCOL CHAIN:\n" + JSON.stringify(info,null,2));
+};
+
+async function mineOnce(){
+  const res = await fetchMine();
+  if(res.mined){
+    log(`⛏️ PROTOCOL: frsig://block/${res.block.index} • hash=${res.block.hash.slice(0,12)}… • txs=${res.block.txs.length}`);
+    burstParticles(lastNodeCenter(), 40, "#00ff99");
+    await syncState();
+  } else {
+    log("⏳ PROTOCOL: no solution this round");
+  }
+}
+btnMine.onclick = mineOnce;
+
+// ===== System buttons =====
+btnHealth.onclick = async ()=>{
+  const r = await fetchHealth();
+  log("❤️ HEALTH: " + JSON.stringify(r));
+};
+btnVersion.onclick = async ()=>{
+  const r = await fetchVersion();
+  log("ℹ️ VERSION: " + JSON.stringify(r));
+};
+
+// ===== Main loop =====
 function loop(){ stepPhysics(); draw(); requestAnimationFrame(loop); }
 (async()=>{ await syncState(true); loop(); })();
