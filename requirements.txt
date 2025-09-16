@@ -1,1 +1,10 @@
+# Core
 Flask>=3.0,<4.0
+
+# Testing
+pytest>=8.0,<9.0
+
+# (Optional, lightweight utils)
+# black і flake8 лишив як коментарі — можна включити, якщо треба локально lint-ити
+# black>=24.0,<25.0
+# flake8>=7.0,<8.0
