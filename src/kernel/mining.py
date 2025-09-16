@@ -13,7 +13,8 @@ class Miner:
             return None
 
         for nonce in range(max_iters):
-            h = hashlib.sha256(f"{parent.hash}{nonce}".encode()).hexdigest()
+            payload = f"{parent.hash}{txs}{nonce}"
+            h = hashlib.sha256(payload.encode()).hexdigest()
             if h.startswith("0" * difficulty):
                 blk = Block(
                     index=parent.index + 1,
