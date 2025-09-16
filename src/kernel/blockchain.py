@@ -5,7 +5,7 @@ class Block:
     def __init__(self, index, ts, parent_hash, txs, difficulty, nonce, hash_):
         self.index = index
         self.ts = ts
-        self.parent = parent_hash   # тепер явно зберігається parent
+        self.parent = parent_hash   # явно зберігаємо parent
         self.txs = txs
         self.difficulty = difficulty
         self.nonce = nonce
@@ -40,8 +40,9 @@ class Chain:
         )
         self.blocks.append(genesis_block)
 
-    def add_tx(self, txid, payload):
-        self.pending.append({"txid": txid, "payload": payload})
+    def add_tx(self, tx):
+        """tx = {op, payload}"""
+        self.pending.append(tx)
         return True
 
     def add_block(self, block):
