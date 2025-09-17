@@ -8,7 +8,6 @@ from src.kernel.mining import Miner
 
 bp = Blueprint("api", __name__, url_prefix="/")
 
-# kernel + chain
 kernel = MiniOS()
 chain = Chain()
 miner = Miner(chain)
@@ -16,7 +15,7 @@ miner = Miner(chain)
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 STATE_PATH = os.path.join(ROOT, "vr_state.json")
 
-# ---------- health / version ----------
+# ---------- Health ----------
 @bp.route("/health")
 def health():
     return jsonify({"ok": True})
@@ -25,7 +24,7 @@ def health():
 def version():
     return jsonify({"name": "LivingOS", "protocol": "frsig://", "api": 1})
 
-# ---------- state ----------
+# ---------- State ----------
 @bp.route("/state")
 def state():
     if not os.path.isfile(STATE_PATH):
@@ -40,6 +39,7 @@ def api_fcp():
     msg = data.get("msg", "")
     if not (isinstance(msg, str) and msg.startswith("fcp://") and "|" in msg):
         return jsonify({"resp": fcp_pack("ERR", reason="bad msg")})
+
     op, args = fcp_parse(msg)
     try:
         if op == "T":
