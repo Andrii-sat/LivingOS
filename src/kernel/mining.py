@@ -1,5 +1,4 @@
-import time
-import hashlib
+import time, hashlib
 from .blockchain import Block
 
 class Miner:
@@ -13,13 +12,12 @@ class Miner:
             return None
 
         for nonce in range(max_iters):
-            payload = f"{parent.hash}{txs}{nonce}"
-            h = hashlib.sha256(payload.encode()).hexdigest()
+            h = hashlib.sha256(f"{parent.hash}{nonce}".encode()).hexdigest()
             if h.startswith("0" * difficulty):
                 blk = Block(
                     index=parent.index + 1,
                     ts=time.time(),
-                    parent_hash=parent.hash,
+                    parent=parent.hash,
                     txs=txs,
                     difficulty=difficulty,
                     nonce=nonce,
