@@ -1,5 +1,10 @@
 :root{
-  --bg:#050814;--ink:#e6ecff;--sub:#9fb0ff;--line:#213357;--glow:#5aa2ff;--accent:#7cf6d8;
+  --bg:#050814;
+  --ink:#e6ecff;
+  --sub:#9fb0ff;
+  --line:#213357;
+  --glow:#5aa2ff;
+  --accent:#7cf6d8;
 }
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Arial}
