@@ -7,15 +7,16 @@ class Miner:
         self.chain = chain
 
     def mine_once(self, max_iters=200000, difficulty=2):
-        # потрібні транзакції в мемпулі
+        #
         if not self.chain.pending:
             return None
-        parent = self.chain.blocks[-1]
-        txs = list(self.chain.pending)  # знімок мемпулу
 
-        # простий PoW: шукаємо хеш з префіксом '0'*difficulty
+        parent = self.chain.blocks[-1]
+        txs = list(self.chain.pending)  # 
+
         prefix = "0" * int(difficulty)
         base = f"{parent.hash}|{len(txs)}|{difficulty}|"
+
         for nonce in range(int(max_iters)):
             h = hashlib.sha256(f"{base}{nonce}".encode()).hexdigest()
             if h.startswith(prefix):
