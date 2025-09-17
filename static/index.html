@@ -1,41 +1,32 @@
-<!doctype html>
-<meta charset="utf-8">
-<title>LivingOS — Showtime (frsig://)</title>
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<link rel="stylesheet" href="/style.css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LivingOS — Fractal Agents Playground</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
-<header>
-  <div class="container">
-    <div class="row">
-      <input id="txt" class="input" placeholder="Type text → ADD">
-      <button class="btn" id="btn-add">ADD</button>
-      <button class="btn" id="btn-merge" disabled>MERGE</button>
-      <button class="btn" id="btn-export">EXPORT</button>
-      <button class="btn" id="btn-import">IMPORT</button>
-      <button class="btn" id="btn-clear">CLEAR</button>
-      <button class="btn" id="btn-demo">DEMO (2k)</button>
-      <button class="btn" id="btn-demo10k">DEMO (10k)</button>
-      <button class="btn" id="btn-story">Story Mode</button>
-      <button class="btn" id="btn-chain">CHAIN</button>
-      <button class="btn" id="btn-mine">MINE</button>
-      <label><input type="checkbox" id="auto-mine"> Auto-mine</label>
-      <button class="btn" id="btn-health">HEALTH</button>
-      <button class="btn" id="btn-version">VERSION</button>
-      <button class="btn" id="zoom-in">＋</button>
-      <button class="btn" id="zoom-out">－</button>
-      <button class="btn" id="zoom-reset">Reset</button>
-    </div>
+  <h1>🌌 LivingOS — Fractal Agents Playground</h1>
+
+  <div class="controls">
+    <input id="inputText" placeholder="Enter text for agent">
+    <button id="btnAdd">Add Agent</button>
+    <br><br>
+    <input id="inputA" placeholder="Agent A (descriptor or label)">
+    <input id="inputB" placeholder="Agent B (descriptor or label)">
+    <button id="btnMerge">Merge Agents</button>
+    <br><br>
+    <button id="btnClear">Clear World</button>
+    <button id="btnExport">Export World</button>
+    <br><br>
+    <button id="btnChain">Show Chain</button>
+    <button id="btnMine">Mine Block</button>
+    <button id="btnAutoMine">Start Auto Mining</button>
   </div>
-</header>
-<canvas id="canvas"></canvas>
-<pre id="log">Ready.</pre>
-<footer>
-  <div class="tips">
-    <span class="tip">Tap to select (2) → MERGE</span>
-    <span class="tip">Double-tap second = quick MERGE</span>
-    <span class="tip">Drag to move • Wheel/Pinch to zoom</span>
-  </div>
-  <div id="status">Agents: 0 • Links: 0</div>
-</footer>
-<script src="/app.js"></script>
+
+  <h2>📡 Output</h2>
+  <pre id="output" class="output-box">Waiting for action...</pre>
+
+  <script src="app.js"></script>
 </body>
+</html>
