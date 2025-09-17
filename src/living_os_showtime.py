@@ -6,7 +6,7 @@ from src.api.routes import bp as api_bp
 app = Flask(__name__, static_folder="../static", static_url_path="")
 app.register_blueprint(api_bp)
 
-# Static files
+# ---------- Static ----------
 @app.route("/")
 def index():
     return send_from_directory(app.static_folder, "index.html")
@@ -21,7 +21,6 @@ def style_css():
 
 if __name__ == "__main__":
     port = 5000
-    # simple --port parsing
     if "--port" in sys.argv:
         try:
             i = sys.argv.index("--port")
