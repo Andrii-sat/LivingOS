@@ -1,4 +1,5 @@
-import time, hashlib
+import time
+import hashlib
 from .blockchain import Block
 
 class Miner:
@@ -6,20 +7,24 @@ class Miner:
         self.chain = chain
 
     def mine_once(self, max_iters=200000, difficulty=2):
-        parent = self.chain.blocks[-1]
-        txs = list(self.chain.pending)
-        if not txs:
+        # потрібні транзакції в мемпулі
+        if not self.chain.pending:
             return None
+        parent = self.chain.blocks[-1]
+        txs = list(self.chain.pending)  # знімок мемпулу
 
-        for nonce in range(max_iters):
-            h = hashlib.sha256(f"{parent.hash}{nonce}".encode()).hexdigest()
-            if h.startswith("0" * difficulty):
+        # простий PoW: шукаємо хеш з префіксом '0'*difficulty
+        prefix = "0" * int(difficulty)
+        base = f"{parent.hash}|{len(txs)}|{difficulty}|"
+        for nonce in range(int(max_iters)):
+            h = hashlib.sha256(f"{base}{nonce}".encode()).hexdigest()
+            if h.startswith(prefix):
                 blk = Block(
                     index=parent.index + 1,
                     ts=time.time(),
-                    parent=parent.hash,
+                    parent_hash=parent.hash,
                     txs=txs,
-                    difficulty=difficulty,
+                    difficulty=int(difficulty),
                     nonce=nonce,
                     hash_=h
                 )
