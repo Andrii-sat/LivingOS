@@ -2,41 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>LivingOS — Fractal Agents Playground</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="/style.css">
+  <title>LivingOS — Fractal Agents (frsig://)</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <div id="ui">
-    <div class="row top">
-      <input id="txt" placeholder="Type text → ADD" />
-      <button id="btn-add">ADD</button>
-      <button id="btn-merge" disabled>MERGE</button>
-      <button id="btn-export">EXPORT</button>
-      <button id="btn-import">IMPORT</button>
-      <button id="btn-clear">CLEAR</button>
-      <button id="btn-demo">DEMO (2k)</button>
-      <button id="btn-demo10k">DEMO (10k)</button>
-      <label class="badge"><input type="checkbox" id="ck-auto"> Auto-merge</label>
-      <button id="btn-story">Story Mode</button>
-      <button id="btn-chain">CHAIN</button>
-      <button id="btn-mine">MINE</button>
-      <button id="btn-auto-mine">AUTO-MINE</button>
-      <button id="zoom-in">＋</button>
-      <button id="zoom-out">－</button>
-      <button id="zoom-reset">Reset</button>
-    </div>
-    <div class="row legend">
-      <span>Tap nodes to select (2) → MERGE • Double-tap second = quick MERGE • Drag = move • Wheel/Pinch = zoom</span>
-    </div>
+<header class="topbar">
+  <div class="row">
+    <input id="txt" class="input" placeholder="Type text → ADD" autocomplete="off" />
+    <button class="btn" id="btn-add">ADD</button>
+    <button class="btn" id="btn-merge" disabled>MERGE</button>
+
+    <button class="btn" id="btn-export">EXPORT</button>
+    <label class="btn file-btn">
+      IMPORT
+      <input type="file" id="file-import" accept="application/json" />
+    </label>
+    <button class="btn" id="btn-clear">CLEAR</button>
+
+    <button class="btn" id="btn-demo">DEMO (2k)</button>
+    <button class="btn" id="btn-demo10k">DEMO (10k)</button>
+    <button class="btn" id="btn-story">Story Mode</button>
+
+    <button class="btn" id="btn-chain">CHAIN</button>
+    <button class="btn" id="btn-mine">MINE</button>
+
+    <label class="switch">
+      <input type="checkbox" id="auto-merge" />
+      <span>Auto-merge</span>
+    </label>
+
+    <button class="btn" id="zoom-in">＋</button>
+    <button class="btn" id="zoom-out">－</button>
+    <button class="btn" id="zoom-reset">Reset</button>
   </div>
+</header>
 
-  <canvas id="canvas"></canvas>
-  <pre id="log">Ready.</pre>
-  <footer>
-    <div id="status">Agents: 0 • Links: 0</div>
-  </footer>
+<canvas id="canvas"></canvas>
 
-  <script src="/app.js"></script>
+<footer class="bottombar">
+  <div class="tips">
+    <span class="tip">Tap to select (2) → MERGE</span>
+    <span class="tip">Double-tap second = quick MERGE</span>
+    <span class="tip">Drag to move • Wheel/Pinch to zoom</span>
+  </div>
+  <div id="status">Agents: 0 • Links: 0</div>
+</footer>
+
+<!-- Console panel -->
+<pre id="console" class="console">Ready.</pre>
+
+<script src="/app.js"></script>
 </body>
 </html>
