@@ -1,11 +1,10 @@
 import time
-import hashlib
 
 class Block:
-    def __init__(self, index, ts, parent_hash, txs, difficulty, nonce, hash_):
+    def __init__(self, index, ts, parent, txs, difficulty, nonce, hash_):
         self.index = index
         self.ts = ts
-        self.parent = parent_hash   # явно зберігаємо parent
+        self.parent = parent
         self.txs = txs
         self.difficulty = difficulty
         self.nonce = nonce
@@ -25,14 +24,14 @@ class Block:
 class Chain:
     def __init__(self):
         self.blocks = []
-        self.pending = []   # мемпул для транзакцій
+        self.pending = []
         self.genesis()
 
     def genesis(self):
         genesis_block = Block(
-            index=1,
+            index=0,
             ts=time.time(),
-            parent_hash="0"*64,
+            parent="0"*64,
             txs=["GENESIS"],
             difficulty=1,
             nonce=0,
@@ -40,12 +39,11 @@ class Chain:
         )
         self.blocks.append(genesis_block)
 
-    def add_tx(self, tx):
-        """tx = {op, payload}"""
+    def add_tx(self, tx: dict):
         self.pending.append(tx)
         return True
 
-    def add_block(self, block):
+    def add_block(self, block: Block):
         self.blocks.append(block)
         self.pending.clear()
 
