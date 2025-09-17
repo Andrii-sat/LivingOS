@@ -2,14 +2,13 @@
 const cvs = document.getElementById("canvas");
 const ctx = cvs.getContext("2d");
 const statusEl = document.getElementById("status");
-const consoleEl = document.getElementById("console");
+const logEl = document.getElementById("log");
 
 const input = document.getElementById("txt");
 const btnAdd = document.getElementById("btn-add");
 const btnMerge = document.getElementById("btn-merge");
 const btnExport = document.getElementById("btn-export");
 const fileImport = document.getElementById("file-import");
-const btnImportLabel = document.querySelector(".file-btn");
 const btnClear = document.getElementById("btn-clear");
 const btnDemo = document.getElementById("btn-demo");
 const btnDemo10k = document.getElementById("btn-demo10k");
@@ -21,7 +20,7 @@ const btnZoomIn = document.getElementById("zoom-in");
 const btnZoomOut = document.getElementById("zoom-out");
 const btnZoomReset = document.getElementById("zoom-reset");
 
-function appendLog(msg){ consoleEl.textContent = msg; console.log(msg); }
+function log(msg){ logEl.textContent = msg; console.log(msg); }
 function resize(){ cvs.width = innerWidth; cvs.height = innerHeight - 210; }
 resize(); addEventListener("resize", resize);
 
@@ -41,6 +40,7 @@ async function api(path, method="GET", body=null){
   if (body) opt.body = JSON.stringify(body);
   const r = await fetch(path, opt);
   const ct = (r.headers.get("content-type")||"");
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
   if (ct.includes("application/json")) return await r.json();
   return await r.text();
 }
@@ -78,7 +78,7 @@ async function refreshState(resetCam=false){
 function worldToScreen(p){ return {x:(p.x - cam.x)*cam.scale + cvs.width/2, y:(p.y - cam.y)*cam.scale + cvs.height/2}; }
 function screenToWorld(p){ return {x:(p.x - cvs.width/2)/cam.scale + cam.x, y:(p.y - cvs.height/2)/cam.scale + cam.y}; }
 
-// ---------- Physics (light) ----------
+// ---------- Physics ----------
 function stepPhysics(){
   const kRepel=1500, kSpring=0.0012, damp=0.86, rest=110;
   const N = nodes.length, STEP=(N>3000)?3:1;
@@ -112,7 +112,6 @@ function rndColor(seed){ return "#"+((seed&0xFFFFFF).toString(16)).padStart(6,"0
 function draw(){
   ctx.clearRect(0,0,cvs.width,cvs.height);
 
-  // sample edges for clarity on huge graphs
   const MAX_EDGES=6000, step=Math.max(1,Math.floor(edges.length/MAX_EDGES));
   ctx.lineWidth=1.05; ctx.strokeStyle="rgba(80,120,200,0.35)";
   for(let i=0;i<edges.length;i+=step){
@@ -121,7 +120,6 @@ function draw(){
     ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
   }
 
-  // highlight neighbors of hover/selection
   if (hoverId || selected.size){
     const focus = hoverId ? new Set([hoverId]) : new Set(selected);
     for(const fid of focus){
@@ -135,7 +133,6 @@ function draw(){
     }
   }
 
-  // nodes
   for(const n of nodes){
     const s=sim[n.id]; if(!s) continue;
     const p=worldToScreen(s); const r=10+(n.weight||1)*3 + s.pulse*3;
@@ -164,7 +161,6 @@ function loop(){ stepPhysics(); draw(); requestAnimationFrame(loop); }
 
 // ---------- Interactions ----------
 function nodeAt(x,y){
-  // hit-test from topmost to lowest
   for(let i=nodes.length-1;i>=0;i--){
     const n=nodes[i], s=sim[n.id]; if(!s) continue;
     const p=worldToScreen(s); const r=18;
@@ -181,7 +177,6 @@ cvs.addEventListener("pointerdown", ev=>{
   if(id){
     const now=performance.now();
     if(lastTapId && lastTapId!==id && (now-lastTapTime)<600){
-      // quick merge A (previous) + B (current)
       mergeByIds(lastTapId, id);
       selected.clear(); btnMerge.disabled=true;
       lastTapId=id; lastTapTime=now; return;
@@ -236,9 +231,8 @@ async function addAgent(){
   const w = screenToWorld({x:sx,y:sy});
   await fcp("T", {text:v, x:w.x, y:w.y});
   await refreshState();
-  appendLog(`➕ Added: ${v}`);
+  log(`➕ Added: ${v}`);
   if (autoMergeChk.checked && selected.size===1){
-    // if we already had one selected, try quick merge with the new last node
     const last = nodes[nodes.length-1]?.id;
     if(last){ selected.add(last); btnMerge.disabled=(selected.size!==2); }
     if(selected.size===2) { const [a,b]=[...selected]; await mergeByIds(a,b); selected.clear(); }
@@ -251,7 +245,7 @@ async function mergeByIds(idA,idB){
   if(!a||!b) return;
   await fcp("M", {a:a.desc, b:b.desc, mix:0.5});
   await refreshState();
-  appendLog(`⚡ Merged: ${(a.summary||"A")} + ${(b.summary||"B")}`);
+  log(`⚡ Merged: ${(a.summary||"A")} + ${(b.summary||"B")}`);
 }
 async function mergeAgents(){
   if(selected.size!==2) return;
@@ -264,12 +258,13 @@ btnMerge.onclick = mergeAgents;
 btnExport.onclick = async ()=>{
   try{
     const res = await fetch("/api/export");
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url; a.download = "vr_state.json"; a.click();
-    appendLog("💾 Exported → vr_state.json");
-  }catch(e){ appendLog("❌ Export failed: " + e); }
+    log("💾 Exported → vr_state.json");
+  }catch(e){ log("❌ Export failed: " + e.message); }
 };
 
 fileImport.addEventListener("change", async (ev)=>{
@@ -277,12 +272,12 @@ fileImport.addEventListener("change", async (ev)=>{
   try{
     const text = await file.text(); const json = JSON.parse(text);
     const r = await api("/api/import","POST", json);
-    if(r && r.ok){ appendLog("📥 Imported OK"); await refreshState(true); }
-    else appendLog("❌ Import error");
-  }catch(e){ appendLog("❌ Bad JSON"); }
+    if(r && r.ok){ log(`📥 Imported OK • nodes: ${(json.nodes||[]).length}`); await refreshState(true); }
+    else log("❌ Import error");
+  }catch(e){ log("❌ Bad JSON"); }
 });
 
-btnClear.onclick = async ()=>{ await fcp("CLR",{}); await refreshState(true); appendLog("🧹 Cleared"); };
+btnClear.onclick = async ()=>{ await fcp("CLR",{}); await refreshState(true); log("🧹 Cleared"); };
 
 btnDemo.onclick = ()=> demo(2000);
 btnDemo10k.onclick = ()=> demo(10000);
@@ -295,54 +290,59 @@ async function demo(count){
     const pad=140, sx=Math.random()*(cvs.width-pad*2)+pad, sy=Math.random()*(cvs.height-pad*2)+pad;
     const w=screenToWorld({x:sx,y:sy});
     await fcp("T",{text:label,x:w.x,y:w.y});
-    if(i%batch===0){ await refreshState(); appendLog(`🌌 Created ${i+1}/${count}`); }
+    if(i%batch===0){ await refreshState(); log(`🌌 Created ${i+1}/${count}`); }
   }
   await refreshState(true);
-  appendLog(`✅ DEMO complete: ${count} agents.`);
+  log(`✅ DEMO complete: ${count} agents.`);
 }
 
 btnStory.onclick = storyMode;
 async function storyMode(){
   if (nodes.length < 50) await demo(200);
-  appendLog("🎬 Story Mode…");
+  log("🎬 Story Mode…");
   const degree = id => (adj.get(id)?.size || 0);
   for(let step=0; step<Math.min(20,nodes.length-1); step++){
     nodes.sort((a,b)=>degree(b.id)-degree(a.id));
     const a=nodes[0]?.id, b=nodes[1]?.id;
     if(a && b){ await mergeByIds(a,b); await new Promise(r=>setTimeout(r,400)); await refreshState(); }
   }
-  appendLog("🏁 Story complete.");
+  log("🏁 Story complete.");
 }
 
 // blockchain
 btnChain.onclick = async ()=>{
-  const j = await api("/chain");
-  appendLog("⛓ Chain → height: "+j.height+" • pending: "+j.pending);
+  try{
+    const j = await api("/chain");
+    log(`⛓ Chain • height: ${j.height} • pending: ${j.pending} • tip: ${String(j.tip).slice(0,10)}…`);
+  }catch(e){ log("❌ Chain error: "+e.message); }
 };
 btnMine.onclick = async ()=>{
-  const j = await api("/mine","POST",{max_iters:80000, difficulty:2});
-  if(j.mined){ appendLog("🪙 Mined block #"+j.block.index+" • hash "+j.block.hash.slice(0,10)+"…"); }
-  else appendLog("⛏ No solution this round");
+  try{
+    const j = await api("/mine","POST",{max_iters:80000, difficulty:2});
+    if(j.mined){ log(`🪙 Mined block #${j.block.index} • ${j.block.hash.slice(0,10)}…`); }
+    else log("⛏ No solution this round");
+  }catch(e){ log("❌ Mine error: "+e.message); }
 };
 
-// auto-mine
+// auto-mine toggle (використовуй вручну через DevTools за бажанням)
 let mineTimer=null;
 function toggleAutoMine(){
-  if(mineTimer){ clearInterval(mineTimer); mineTimer=null; appendLog("⛏ Auto-mine OFF"); return; }
+  if(mineTimer){ clearInterval(mineTimer); mineTimer=null; log("⛏ Auto-mine OFF"); return; }
   mineTimer = setInterval(async ()=>{
-    await api("/mine","POST",{max_iters:50000, difficulty:2});
-    const j = await api("/chain"); statusEl.textContent = `Agents: ${nodes.length} • Links: ${edges.length} • Blocks: ${j.height}`;
+    try{
+      await api("/mine","POST",{max_iters:50000, difficulty:2});
+      const j = await api("/chain");
+      statusEl.textContent = `Agents: ${nodes.length} • Links: ${edges.length} • Blocks: ${j.height}`;
+    }catch(e){ /* ігноруємо */ }
   }, 1800);
-  appendLog("⛏ Auto-mine ON");
+  log("⛏ Auto-mine ON");
 }
-document.getElementById("btn-mine").nextElementSibling?.addEventListener?.("click", toggleAutoMine); // safeguard
-// also expose explicitly:
 window.toggleAutoMine = toggleAutoMine;
 
 // zoom buttons
-btnZoomIn.onclick = ()=>{ cam.scale=Math.min(3,cam.scale*1.15); };
-btnZoomOut.onclick = ()=>{ cam.scale=Math.max(0.33,cam.scale/1.15); };
-btnZoomReset.onclick = ()=>{ cam={x:0,y:0,scale:1}; };
+btnZoomIn.onclick = ()=>{ cam.scale = Math.min(3, cam.scale*1.15); };
+btnZoomOut.onclick = ()=>{ cam.scale = Math.max(0.33, cam.scale/1.15); };
+btnZoomReset.onclick = ()=>{ cam = {x:0,y:0,scale:1}; };
 
 // init
 (async()=>{ await refreshState(true); loop(); })();
